@@ -39,12 +39,21 @@ class ViewController: UIViewController {
     private let summaryTitle = UILabel()
     private let summaryContent = UILabel()
     
+    // 더 보기 버튼, 접기 버튼
+    private let seeMoreButton = UIButton()
+    private let foldButton = UIButton()
+    private var summaryButtonStackView = UIStackView()
+    
     // 목차 스택 뷰
     private var chapterStackView = UIStackView()
     private let chapterTitle = UILabel()
     private let chapterContent = UILabel()
     
     private let dataService = DataService() // JSON 정보 로드
+    
+    private var isFullText: Bool {
+        UserDefaults.standard.bool(forKey: "isFullText") // 주의: nil이면 false임.
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -224,12 +233,34 @@ class ViewController: UIViewController {
         summaryTitle.font = UIFont.systemFont(ofSize: 18, weight: .bold)
         summaryTitle.textColor = .black
         
-        summaryContent.text = books.isEmpty ? "" : books[0].summary
         summaryContent.font = UIFont.systemFont(ofSize: 14)
         summaryContent.textColor = .darkGray
         summaryContent.numberOfLines = 0
         
-        summaryStackView = UIStackView(arrangedSubviews: [summaryTitle, summaryContent])
+        // 요약 내 더 보기 버튼
+        seeMoreButton.setTitle("더 보기", for: .normal)
+        seeMoreButton.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+        seeMoreButton.setTitleColor(.systemBlue, for: .normal)
+        seeMoreButton.addTarget(self, action: #selector(seeMoreButtonTapped), for: .touchUpInside)
+        
+        foldButton.setTitle("접기", for: .normal)
+        foldButton.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+        foldButton.setTitleColor(.systemBlue, for: .normal)
+        foldButton.addTarget(self, action: #selector(seeMoreButtonTapped), for: .touchUpInside)
+        
+        // 버튼 상태 설정
+        if !isFullText {
+            summaryContent.text = showSummary(fullText: false)
+            foldButton.isHidden = true
+        } else {
+            summaryContent.text = showSummary(fullText: true)
+            seeMoreButton.isHidden = true
+        }
+        
+        let spacer = UIView()
+        summaryButtonStackView = UIStackView(arrangedSubviews: [spacer, seeMoreButton, foldButton])
+        
+        summaryStackView = UIStackView(arrangedSubviews: [summaryTitle, summaryContent, summaryButtonStackView])
         summaryStackView.axis = .vertical
         summaryStackView.spacing = 8
         summaryStackView.translatesAutoresizingMaskIntoConstraints = false
@@ -257,9 +288,9 @@ class ViewController: UIViewController {
         chapterContent.textColor = .darkGray
         chapterContent.numberOfLines = 0
         
-        // 목차 줄 간격 8
-        let text = books.isEmpty ? "" : books[0].chapters.map { $0.title }.joined(separator: "\n")
-        let attributedString = NSMutableAttributedString(string: text)
+        // 목차 줄 간격 설정(lineSpacing 8)
+        let chapters = books.isEmpty ? "" : books[0].chapters.map { $0.title }.joined(separator: "\n")
+        let attributedString = NSMutableAttributedString(string: chapters)
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = 8
         attributedString.addAttribute(NSAttributedString.Key.paragraphStyle, value: paragraphStyle, range: NSMakeRange(0, attributedString.length))
@@ -302,6 +333,30 @@ class ViewController: UIViewController {
             return formatter.string(from: date)
         } else {
             return "Unknown"
+        }
+    }
+    
+    // 요약 텍스트 제한 글자 수(450자) 반환
+    private func showSummary(fullText: Bool) -> String {
+        let text = books.isEmpty ? "" : books[0].summary
+        if fullText || text.count < 450 {
+            return text
+        } else {
+            return String(text.prefix(450)) + "..."
+        }
+    }
+    
+    @objc private func seeMoreButtonTapped() {
+        if !isFullText {
+            summaryContent.text = showSummary(fullText: true)
+            seeMoreButton.isHidden = true
+            foldButton.isHidden = false
+            UserDefaults.standard.set(true, forKey: "isFullText")
+        } else {
+            summaryContent.text = showSummary(fullText: false)
+            seeMoreButton.isHidden = false
+            foldButton.isHidden = true
+            UserDefaults.standard.set(false, forKey: "isFullText")
         }
     }
 }
