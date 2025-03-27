@@ -12,6 +12,7 @@ class ViewController: UIViewController {
     
     private let titleLabel = UILabel() // 책 제목
     private let seriesNumberButton = UIButton() // 시리즈 순서
+    private let scrollView = UIScrollView() // 시리즈 순서 버튼 밑으로 스크롤 뷰 적용
     
     // 책 정보 스택 뷰
     private var containerStackView = UIStackView() // 전체 스택 뷰(이미지 + 책 정보)
@@ -24,9 +25,9 @@ class ViewController: UIViewController {
     private var releaseDateStackView = UIStackView() // 출판일
     private let releaseDateTitle = UILabel()
     private let releaseDateContent = UILabel()
-    private var pagesStackView = UIStackView() // 총 페이지
-    private let pagesTitle = UILabel()
-    private let pagesContent = UILabel()
+    private var pageStackView = UIStackView() // 총 페이지
+    private let pageTitle = UILabel()
+    private let pageContent = UILabel()
     
     // 헌정사 스택 뷰
     private var dedicationStackView = UIStackView()
@@ -37,6 +38,11 @@ class ViewController: UIViewController {
     private var summaryStackView = UIStackView()
     private let summaryTitle = UILabel()
     private let summaryContent = UILabel()
+    
+    // 목차 스택 뷰
+    private var chapterStackView = UIStackView()
+    private let chapterTitle = UILabel()
+    private let chapterContent = UILabel()
     
     private let dataService = DataService() // JSON 정보 로드
     
@@ -93,6 +99,17 @@ class ViewController: UIViewController {
         seriesNumberButton.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor).isActive = true
         // layout 변경 필요: centerX -> leading, trailing 각각 super view로부터 20 이상
         
+        // 스크롤 뷰
+        scrollView.showsVerticalScrollIndicator = false
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        
+        view.addSubview(scrollView)
+        
+        scrollView.topAnchor.constraint(equalTo: seriesNumberButton.bottomAnchor).isActive = true
+        scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+        
         // 책 정보 스택 뷰
         // 이미지
         bookImageView.image = UIImage(named: "harrypotter1")
@@ -104,7 +121,7 @@ class ViewController: UIViewController {
         bookImageView.widthAnchor.constraint(equalToConstant: width).isActive = true
         
         // 제목
-        bookTitle.text = books[0].title
+        bookTitle.text = books.isEmpty ? "" : books[0].title
         bookTitle.font = UIFont.systemFont(ofSize: 20, weight: .bold)
         bookTitle.textColor = .black
         bookTitle.numberOfLines = 0
@@ -114,7 +131,7 @@ class ViewController: UIViewController {
         authorTitle.font = UIFont.systemFont(ofSize: 16, weight: .bold)
         authorTitle.textColor = .black
         
-        authorContent.text = books[0].author
+        authorContent.text = books.isEmpty ? "" : books[0].author
         authorContent.font = UIFont.systemFont(ofSize: 18)
         authorContent.textColor = .darkGray
         
@@ -138,20 +155,20 @@ class ViewController: UIViewController {
         releaseDateStackView.spacing = 8
         
         // 총 페이지
-        pagesTitle.text = "Pages"
-        pagesTitle.font = UIFont.systemFont(ofSize: 14, weight: .bold)
-        pagesTitle.textColor = .black
+        pageTitle.text = "Pages"
+        pageTitle.font = UIFont.systemFont(ofSize: 14, weight: .bold)
+        pageTitle.textColor = .black
         
-        pagesContent.text = String(books[0].pages)
-        pagesContent.font = UIFont.systemFont(ofSize: 14)
-        pagesContent.textColor = .gray
+        pageContent.text = books.isEmpty ? "" : String(books[0].pages)
+        pageContent.font = UIFont.systemFont(ofSize: 14)
+        pageContent.textColor = .gray
         
-        pagesStackView = UIStackView(arrangedSubviews: [pagesTitle, pagesContent])
-        pagesStackView.axis = .horizontal
-        pagesStackView.spacing = 8
+        pageStackView = UIStackView(arrangedSubviews: [pageTitle, pageContent])
+        pageStackView.axis = .horizontal
+        pageStackView.spacing = 8
         
         // 전체 책 정보 스택 뷰(이미지 제외)
-        verticalStackView = UIStackView(arrangedSubviews: [bookTitle, authorStackView, releaseDateStackView, pagesStackView])
+        verticalStackView = UIStackView(arrangedSubviews: [bookTitle, authorStackView, releaseDateStackView, pageStackView])
         verticalStackView.axis = .vertical
         verticalStackView.spacing = 8
         verticalStackView.alignment = .leading
@@ -163,11 +180,17 @@ class ViewController: UIViewController {
         containerStackView.alignment = .top
         containerStackView.translatesAutoresizingMaskIntoConstraints = false
         
-        view.addSubview(containerStackView)
+        // view.addSubview(containerStackView)
+        scrollView.addSubview(containerStackView)
         
-        containerStackView.topAnchor.constraint(equalTo: seriesNumberButton.bottomAnchor, constant: 16).isActive = true
-        containerStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 5).isActive = true
-        containerStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -5).isActive = true
+//        containerStackView.topAnchor.constraint(equalTo: seriesNumberButton.bottomAnchor, constant: 16).isActive = true
+//        containerStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20).isActive = true
+//        containerStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20).isActive = true
+        
+        containerStackView.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 16).isActive = true
+        containerStackView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 20).isActive = true
+        containerStackView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -20).isActive = true
+        containerStackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -40).isActive = true
         
         // 헌정사
         dedicationTitle.text = "Dedication"
@@ -184,11 +207,17 @@ class ViewController: UIViewController {
         dedicationStackView.spacing = 8
         dedicationStackView.translatesAutoresizingMaskIntoConstraints = false
         
-        view.addSubview(dedicationStackView)
+        // view.addSubview(dedicationStackView)
+        scrollView.addSubview(dedicationStackView)
+        
+//        dedicationStackView.topAnchor.constraint(equalTo: containerStackView.bottomAnchor, constant: 24).isActive = true
+//        dedicationStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20).isActive = true
+//        dedicationStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20).isActive = true
         
         dedicationStackView.topAnchor.constraint(equalTo: containerStackView.bottomAnchor, constant: 24).isActive = true
-        dedicationStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20).isActive = true
-        dedicationStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20).isActive = true
+        dedicationStackView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 20).isActive = true
+        dedicationStackView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -20).isActive = true
+        dedicationStackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -40).isActive = true
         
         // 요약
         summaryTitle.text = "Summary"
@@ -205,11 +234,49 @@ class ViewController: UIViewController {
         summaryStackView.spacing = 8
         summaryStackView.translatesAutoresizingMaskIntoConstraints = false
         
-        view.addSubview(summaryStackView)
+        // view.addSubview(summaryStackView)
+        scrollView.addSubview(summaryStackView)
+        
+//        summaryStackView.topAnchor.constraint(equalTo: dedicationStackView.bottomAnchor, constant: 24).isActive = true
+//        summaryStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20).isActive = true
+//        summaryStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20).isActive = true
         
         summaryStackView.topAnchor.constraint(equalTo: dedicationStackView.bottomAnchor, constant: 24).isActive = true
-        summaryStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20).isActive = true
-        summaryStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20).isActive = true
+        summaryStackView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 20).isActive = true
+        summaryStackView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -20).isActive = true
+        // summaryStackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor).isActive = true
+        summaryStackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -40).isActive = true
+        
+        // 목차
+        chapterTitle.text = "Chapters"
+        chapterTitle.font = UIFont.systemFont(ofSize: 18, weight: .bold)
+        chapterTitle.textColor = .black
+        
+        // chapterContent.text = books.isEmpty ? "" : books[0].chapters.map { $0.title }.joined(separator: "\n")
+        chapterContent.font = UIFont.systemFont(ofSize: 14)
+        chapterContent.textColor = .darkGray
+        chapterContent.numberOfLines = 0
+        
+        // 목차 줄 간격 8
+        let text = books.isEmpty ? "" : books[0].chapters.map { $0.title }.joined(separator: "\n")
+        let attributedString = NSMutableAttributedString(string: text)
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 8
+        attributedString.addAttribute(NSAttributedString.Key.paragraphStyle, value: paragraphStyle, range: NSMakeRange(0, attributedString.length))
+        chapterContent.attributedText = attributedString
+        
+        chapterStackView = UIStackView(arrangedSubviews: [chapterTitle, chapterContent])
+        chapterStackView.axis = .vertical
+        chapterStackView.spacing = 8
+        chapterStackView.translatesAutoresizingMaskIntoConstraints = false
+        
+        scrollView.addSubview(chapterStackView)
+        
+        chapterStackView.topAnchor.constraint(equalTo: summaryStackView.bottomAnchor, constant: 24).isActive = true
+        chapterStackView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 20).isActive = true
+        chapterStackView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -20).isActive = true
+        chapterStackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor).isActive = true
+        chapterStackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -40).isActive = true
     }
     
     private func showError(_ error: Error) {
