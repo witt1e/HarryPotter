@@ -9,9 +9,11 @@ import UIKit
 
 class ViewController: UIViewController {
     private var books: [Book] = []
+    private var seriesNumber = 0
     
     private let titleLabel = UILabel() // 책 제목
-    private let seriesNumberButton = UIButton() // 시리즈 순서
+    private var seriesNumberButton = UIButton() // 시리즈 순서
+    private var seriesNumberStackView = UIStackView()
     private let scrollView = UIScrollView() // 시리즈 순서 버튼 밑으로 스크롤 뷰 적용
     
     // 책 정보 스택 뷰
@@ -81,7 +83,7 @@ class ViewController: UIViewController {
         view.backgroundColor = .white
         
         // 책 제목
-        titleLabel.text = books.isEmpty ? "Book data load failed." : books[0].title
+        titleLabel.text = books.isEmpty ? "Book data load failed." : books[seriesNumber].title
         titleLabel.textAlignment = .center
         titleLabel.font = UIFont.systemFont(ofSize: 24, weight: .bold)
         titleLabel.numberOfLines = 0
@@ -94,19 +96,40 @@ class ViewController: UIViewController {
         titleLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20).isActive = true
         
         // 시리즈 순서
-        seriesNumberButton.setTitle("1", for: .normal)
-        seriesNumberButton.titleLabel?.font = UIFont.systemFont(ofSize: 16)
-        seriesNumberButton.backgroundColor = .systemBlue
-        seriesNumberButton.layer.masksToBounds = true
-        seriesNumberButton.frame.size.width = 30
-        seriesNumberButton.layer.cornerRadius = seriesNumberButton.layer.frame.width / 2
-        seriesNumberButton.translatesAutoresizingMaskIntoConstraints = false
+//        seriesNumberButton.setTitle("\(seriesNumber + 1)", for: .normal)
+//        seriesNumberButton.titleLabel?.font = UIFont.systemFont(ofSize: 16)
+//        seriesNumberButton.backgroundColor = .systemBlue
+//        seriesNumberButton.layer.masksToBounds = true
+//        seriesNumberButton.frame.size.width = 30
+//        seriesNumberButton.layer.cornerRadius = seriesNumberButton.layer.frame.width / 2
+//        seriesNumberButton.translatesAutoresizingMaskIntoConstraints = false
         
-        view.addSubview(seriesNumberButton)
+//        seriesNumberButton = makeSeriesNumberButton(seriesNumber: seriesNumber)
         
-        seriesNumberButton.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16).isActive = true
-        seriesNumberButton.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor).isActive = true
+        for index in 0..<books.count {
+            let button = makeSeriesNumberButton(seriesNumber: index)
+            seriesNumberStackView.addArrangedSubview(button)
+            if seriesNumber != index {
+                button.setTitleColor(.systemBlue, for: .normal)
+                button.backgroundColor = .systemGray5
+            }
+        }
+        
+        seriesNumberStackView.axis = .horizontal
+        seriesNumberStackView.spacing = 20
+        seriesNumberStackView.translatesAutoresizingMaskIntoConstraints = false
+        
+        // view.addSubview(seriesNumberButton)
+        view.addSubview(seriesNumberStackView)
+        
+//        seriesNumberButton.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16).isActive = true
+//        seriesNumberButton.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor).isActive = true
         // layout 변경 필요: centerX -> leading, trailing 각각 super view로부터 20 이상
+        
+        seriesNumberStackView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16).isActive = true
+        seriesNumberStackView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor).isActive = true
+//        seriesNumberStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
+//        seriesNumberStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
         
         // 스크롤 뷰
         scrollView.showsVerticalScrollIndicator = false
@@ -114,14 +137,15 @@ class ViewController: UIViewController {
         
         view.addSubview(scrollView)
         
-        scrollView.topAnchor.constraint(equalTo: seriesNumberButton.bottomAnchor).isActive = true
+//        scrollView.topAnchor.constraint(equalTo: seriesNumberButton.bottomAnchor).isActive = true
+        scrollView.topAnchor.constraint(equalTo: seriesNumberStackView.bottomAnchor).isActive = true
         scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
         
         // 책 정보 스택 뷰
         // 이미지
-        bookImageView.image = UIImage(named: "harrypotter1")
+        bookImageView.image = UIImage(named: "harrypotter\(seriesNumber + 1)")
         bookImageView.contentMode = .scaleAspectFit
         bookImageView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -130,7 +154,7 @@ class ViewController: UIViewController {
         bookImageView.widthAnchor.constraint(equalToConstant: width).isActive = true
         
         // 제목
-        bookTitle.text = books.isEmpty ? "" : books[0].title
+        bookTitle.text = books.isEmpty ? "" : books[seriesNumber].title
         bookTitle.font = UIFont.systemFont(ofSize: 20, weight: .bold)
         bookTitle.textColor = .black
         bookTitle.numberOfLines = 0
@@ -140,7 +164,7 @@ class ViewController: UIViewController {
         authorTitle.font = UIFont.systemFont(ofSize: 16, weight: .bold)
         authorTitle.textColor = .black
         
-        authorContent.text = books.isEmpty ? "" : books[0].author
+        authorContent.text = books.isEmpty ? "" : books[seriesNumber].author
         authorContent.font = UIFont.systemFont(ofSize: 18)
         authorContent.textColor = .darkGray
         
@@ -154,7 +178,7 @@ class ViewController: UIViewController {
         releaseDateTitle.font = UIFont.systemFont(ofSize: 14, weight: .bold)
         releaseDateTitle.textColor = .black
         
-        let date = books.isEmpty ? "" : books[0].releaseDate
+        let date = books.isEmpty ? "" : books[seriesNumber].releaseDate
         releaseDateContent.text = releaseDateFormatter(input: date)
         releaseDateContent.font = UIFont.systemFont(ofSize: 14)
         releaseDateContent.textColor = .gray
@@ -168,7 +192,7 @@ class ViewController: UIViewController {
         pageTitle.font = UIFont.systemFont(ofSize: 14, weight: .bold)
         pageTitle.textColor = .black
         
-        pageContent.text = books.isEmpty ? "" : String(books[0].pages)
+        pageContent.text = books.isEmpty ? "" : String(books[seriesNumber].pages)
         pageContent.font = UIFont.systemFont(ofSize: 14)
         pageContent.textColor = .gray
         
@@ -206,7 +230,7 @@ class ViewController: UIViewController {
         dedicationTitle.font = UIFont.systemFont(ofSize: 18, weight: .bold)
         dedicationTitle.textColor = .black
         
-        dedicationContent.text = books.isEmpty ? "" : books[0].dedication
+        dedicationContent.text = books.isEmpty ? "" : books[seriesNumber].dedication
         dedicationContent.font = UIFont.systemFont(ofSize: 14)
         dedicationContent.textColor = .darkGray
         dedicationContent.numberOfLines = 0
@@ -239,16 +263,21 @@ class ViewController: UIViewController {
         
         // 요약 내 더 보기 버튼
         seeMoreButton.setTitle("더 보기", for: .normal)
-        seeMoreButton.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+        seeMoreButton.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
         seeMoreButton.setTitleColor(.systemBlue, for: .normal)
         seeMoreButton.addTarget(self, action: #selector(seeMoreButtonTapped), for: .touchUpInside)
         
         foldButton.setTitle("접기", for: .normal)
-        foldButton.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+        foldButton.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
         foldButton.setTitleColor(.systemBlue, for: .normal)
         foldButton.addTarget(self, action: #selector(seeMoreButtonTapped), for: .touchUpInside)
         
         // 버튼 상태 설정
+        if books[seriesNumber].summary.count < 450 {
+            seeMoreButton.isHidden = true
+            foldButton.isHidden = true
+        }
+        
         if !isFullText {
             summaryContent.text = showSummary(fullText: false)
             foldButton.isHidden = true
@@ -289,7 +318,7 @@ class ViewController: UIViewController {
         chapterContent.numberOfLines = 0
         
         // 목차 줄 간격 설정(lineSpacing 8)
-        let chapters = books.isEmpty ? "" : books[0].chapters.map { $0.title }.joined(separator: "\n")
+        let chapters = books.isEmpty ? "" : books[seriesNumber].chapters.map { $0.title }.joined(separator: "\n")
         let attributedString = NSMutableAttributedString(string: chapters)
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = 8
@@ -338,7 +367,7 @@ class ViewController: UIViewController {
     
     // 요약 텍스트 제한 글자 수(450자) 반환
     private func showSummary(fullText: Bool) -> String {
-        let text = books.isEmpty ? "" : books[0].summary
+        let text = books.isEmpty ? "" : books[seriesNumber].summary
         if fullText || text.count < 450 {
             return text
         } else {
@@ -358,5 +387,67 @@ class ViewController: UIViewController {
             foldButton.isHidden = true
             UserDefaults.standard.set(false, forKey: "isFullText")
         }
+    }
+    
+    private func makeSeriesNumberButton(seriesNumber: Int) -> UIButton {
+        let button = UIButton()
+        button.setTitle("\(seriesNumber + 1)", for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
+        button.backgroundColor = .systemBlue
+        button.layer.masksToBounds = true
+        button.frame.size.width = 30
+        button.layer.cornerRadius = button.layer.frame.width / 2
+        // button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(seriesNumberButtonTapped), for: .touchUpInside)
+        return button
+    }
+    
+    @objc private func seriesNumberButtonTapped(_ button: UIButton) {
+        guard let number = Int((button.titleLabel?.text)!) else { return }
+        seriesNumber = number - 1 // number는 +1 되어 있는 숫자이므로 원복.
+        updateUI()
+    }
+    
+    private func updateUI() {
+        titleLabel.text = books.isEmpty ? "Book data load failed." : books[seriesNumber].title
+        
+        seriesNumberStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        
+        for index in 0..<books.count {
+            let button = makeSeriesNumberButton(seriesNumber: index)
+            seriesNumberStackView.addArrangedSubview(button)
+            if seriesNumber != index {
+                button.setTitleColor(.systemBlue, for: .normal)
+                button.backgroundColor = .systemGray5
+            }
+        }
+        
+        bookImageView.image = UIImage(named: "harrypotter\(seriesNumber + 1)")
+        
+        bookTitle.text = books.isEmpty ? "" : books[seriesNumber].title
+        
+        authorContent.text = books.isEmpty ? "" : books[seriesNumber].author
+        
+        let date = books.isEmpty ? "" : books[seriesNumber].releaseDate
+        releaseDateContent.text = releaseDateFormatter(input: date)
+        
+        pageContent.text = books.isEmpty ? "" : String(books[seriesNumber].pages)
+        
+        dedicationContent.text = books.isEmpty ? "" : books[seriesNumber].dedication
+        
+        if !isFullText {
+            summaryContent.text = showSummary(fullText: false)
+            foldButton.isHidden = true
+        } else {
+            summaryContent.text = showSummary(fullText: true)
+            seeMoreButton.isHidden = true
+        }
+        
+        let chapters = books.isEmpty ? "" : books[seriesNumber].chapters.map { $0.title }.joined(separator: "\n")
+        let attributedString = NSMutableAttributedString(string: chapters)
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 8
+        attributedString.addAttribute(NSAttributedString.Key.paragraphStyle, value: paragraphStyle, range: NSMakeRange(0, attributedString.length))
+        chapterContent.attributedText = attributedString
     }
 }
