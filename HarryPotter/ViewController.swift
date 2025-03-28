@@ -10,6 +10,7 @@ import UIKit
 class ViewController: UIViewController {
     private var books: [Book] = []
     private var seriesNumber = 0
+    private var shouldShowFullText: Set<Int> = [] // summary 펼치기/접기 정보 저장
     
     private let titleLabel = UILabel() // 책 제목
     private var seriesNumberButton = UIButton() // 시리즈 순서
@@ -53,14 +54,18 @@ class ViewController: UIViewController {
     
     private let dataService = DataService() // JSON 정보 로드
     
-    private var isFullText: Bool {
-        UserDefaults.standard.bool(forKey: "isFullText") // 주의: nil이면 false임.
-    }
+//    private var isFullText: Bool {
+//        UserDefaults.standard.bool(forKey: "isFullText") // 주의: nil이면 false임.
+//    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         loadBooks()
+        
+        if let saved = UserDefaults.standard.array(forKey: "shouldShowFullText") as? [Int] {
+            shouldShowFullText = Set(saved)
+        }
         
         prepareSubviews()
     }
@@ -273,17 +278,29 @@ class ViewController: UIViewController {
         foldButton.addTarget(self, action: #selector(seeMoreButtonTapped), for: .touchUpInside)
         
         // 버튼 상태 설정
-        if books[seriesNumber].summary.count < 450 {
-            seeMoreButton.isHidden = true
-            foldButton.isHidden = true
-        }
+//        if books[seriesNumber].summary.count < 450 {
+//            seeMoreButton.isHidden = true
+//            foldButton.isHidden = true
+//        }
         
-        if !isFullText {
-            summaryContent.text = showSummary(fullText: false)
-            foldButton.isHidden = true
-        } else {
+//        if !isFullText {
+//            summaryContent.text = showSummary(fullText: false)
+//            foldButton.isHidden = true
+//        } else {
+//            summaryContent.text = showSummary(fullText: true)
+//            seeMoreButton.isHidden = true
+//        }
+        
+        if books[seriesNumber].summary.count < 450 {
             summaryContent.text = showSummary(fullText: true)
             seeMoreButton.isHidden = true
+            foldButton.isHidden = true
+        } else if shouldShowFullText.contains(seriesNumber) {
+            summaryContent.text = showSummary(fullText: true)
+            seeMoreButton.isHidden = true
+        } else {
+            summaryContent.text = showSummary(fullText: false)
+            foldButton.isHidden = true
         }
         
         let spacer = UIView()
@@ -368,7 +385,13 @@ class ViewController: UIViewController {
     // 요약 텍스트 제한 글자 수(450자) 반환
     private func showSummary(fullText: Bool) -> String {
         let text = books.isEmpty ? "" : books[seriesNumber].summary
-        if fullText || text.count < 450 {
+//        if fullText || text.count < 450 {
+//            return text
+//        } else {
+//            return String(text.prefix(450)) + "..."
+//        }
+        
+        if fullText {
             return text
         } else {
             return String(text.prefix(450)) + "..."
@@ -376,16 +399,30 @@ class ViewController: UIViewController {
     }
     
     @objc private func seeMoreButtonTapped() {
-        if !isFullText {
-            summaryContent.text = showSummary(fullText: true)
-            seeMoreButton.isHidden = true
-            foldButton.isHidden = false
-            UserDefaults.standard.set(true, forKey: "isFullText")
-        } else {
+//        if !isFullText {
+//            summaryContent.text = showSummary(fullText: true)
+//            seeMoreButton.isHidden = true
+//            foldButton.isHidden = false
+//            UserDefaults.standard.set(true, forKey: "isFullText")
+//        } else {
+//            summaryContent.text = showSummary(fullText: false)
+//            seeMoreButton.isHidden = false
+//            foldButton.isHidden = true
+//            UserDefaults.standard.set(false, forKey: "isFullText")
+//        }
+        
+        if shouldShowFullText.contains(seriesNumber) {
             summaryContent.text = showSummary(fullText: false)
             seeMoreButton.isHidden = false
             foldButton.isHidden = true
-            UserDefaults.standard.set(false, forKey: "isFullText")
+            shouldShowFullText.remove(seriesNumber)
+            UserDefaults.standard.set(Array(shouldShowFullText), forKey: "shouldShowFullText")
+        } else {
+            summaryContent.text = showSummary(fullText: true)
+            seeMoreButton.isHidden = true
+            foldButton.isHidden = false
+            shouldShowFullText.insert(seriesNumber)
+            UserDefaults.standard.set(Array(shouldShowFullText), forKey: "shouldShowFullText")
         }
     }
     
@@ -409,6 +446,10 @@ class ViewController: UIViewController {
     }
     
     private func updateUI() {
+//        if let saved = UserDefaults.standard.array(forKey: "shouldShowFullText") as? [Int] {
+//            shouldShowFullText = Set(saved)
+//        }
+        
         titleLabel.text = books.isEmpty ? "Book data load failed." : books[seriesNumber].title
         
         seriesNumberStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
@@ -435,12 +476,26 @@ class ViewController: UIViewController {
         
         dedicationContent.text = books.isEmpty ? "" : books[seriesNumber].dedication
         
-        if !isFullText {
-            summaryContent.text = showSummary(fullText: false)
-            foldButton.isHidden = true
-        } else {
+//        if !isFullText {
+//            summaryContent.text = showSummary(fullText: false)
+//            foldButton.isHidden = true
+//        } else {
+//            summaryContent.text = showSummary(fullText: true)
+//            seeMoreButton.isHidden = true
+//        }
+        
+        if books[seriesNumber].summary.count < 450 {
             summaryContent.text = showSummary(fullText: true)
             seeMoreButton.isHidden = true
+            foldButton.isHidden = true
+        } else if shouldShowFullText.contains(seriesNumber) {
+            summaryContent.text = showSummary(fullText: true)
+            seeMoreButton.isHidden = true
+            foldButton.isHidden = false
+        } else {
+            summaryContent.text = showSummary(fullText: false)
+            seeMoreButton.isHidden = false
+            foldButton.isHidden = true
         }
         
         let chapters = books.isEmpty ? "" : books[seriesNumber].chapters.map { $0.title }.joined(separator: "\n")
