@@ -133,6 +133,7 @@ class ViewController: UIViewController {
         
         seriesNumberStackView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16).isActive = true
         seriesNumberStackView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor).isActive = true
+        seriesNumberStackView.heightAnchor.constraint(equalToConstant: 30).isActive = true
 //        seriesNumberStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
 //        seriesNumberStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
         
@@ -435,6 +436,7 @@ class ViewController: UIViewController {
         button.backgroundColor = .systemBlue
         button.layer.masksToBounds = true
         button.frame.size.width = 30
+        button.frame.size.height = 30
         button.layer.cornerRadius = button.layer.frame.width / 2
         // button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(seriesNumberButtonTapped), for: .touchUpInside)
