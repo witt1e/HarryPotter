@@ -8,50 +8,50 @@
 import UIKit
 
 class ContentView: UIView {
-    var book: Book?
-    var bookNumber: Int?
-    var isFullSummary: Bool = false
-    var onChange: (Int) -> Void = { _ in }
-    
     // Label
     let bookTitle = UILabel() // 책 제목
     let smallBookTitle = UILabel() // 책 정보 스택 뷰 내 제목
     let authorTitle = UILabel() // "Author"
     let authorLabel = UILabel() // 저자 이름
-    var releaseDateTitle = UILabel() // "Released"
-    var releaseDateLabel = UILabel() // 출판일
-    var pagesTitle = UILabel() // "Pages"
-    var pagesLabel = UILabel() // 총 페이지
-    var dedicationTitle = UILabel() // "Dedication"
-    var dedicationLabel = UILabel() // 헌정사
-    var summaryTitle = UILabel() // "Summary"
-    var summaryLabel = UILabel() // 책 요약
-    var chapterTitle = UILabel() // "Chapter"
+    let releaseDateTitle = UILabel() // "Released"
+    let releaseDateLabel = UILabel() // 출판일
+    let pagesTitle = UILabel() // "Pages"
+    let pagesLabel = UILabel() // 총 페이지
+    let dedicationTitle = UILabel() // "Dedication"
+    let dedicationLabel = UILabel() // 헌정사
+    let summaryTitle = UILabel() // "Summary"
+    let summaryLabel = UILabel() // 책 요약
+    let chapterTitle = UILabel() // "Chapter"
     let chapterLabel = UILabel() // 목차
     
     // Button
-    var showMoreButton = UIButton() // 더 보기
-    var showLessButton = UIButton() // 접기
+    let showMoreButton = UIButton() // 더 보기
+    let showLessButton = UIButton() // 접기
     
     // Image View
     let bookImageView = UIImageView() // 책 이미지
     
     // Stack View
-    var bookNumberStackView = UIStackView() // 책 번호
+    let bookNumberStackView = UIStackView() // 책 번호
     
-    var containerStackView = UIStackView() // 전체(이미지 + 책 정보)
-    var bookInformationStackView = UIStackView() // 책 정보(제목, 저자, 출판일, 총 페이지)
-    var authorStackView = UIStackView() // 저자
-    var releaseDateStackView = UIStackView() // 출판일
-    var pagesStackView = UIStackView() // 총 페이지
+    let containerStackView = UIStackView() // 전체(이미지 + 책 정보)
+    let bookInformationStackView = UIStackView() // 책 정보(제목, 저자, 출판일, 총 페이지)
+    let authorStackView = UIStackView() // 저자
+    let releaseDateStackView = UIStackView() // 출판일
+    let pagesStackView = UIStackView() // 총 페이지
     
-    var dedicationStackView = UIStackView() // 헌정사
-    var summaryStackView = UIStackView() // 요약
-    var summaryButtonStackView = UIStackView() // 더 보기 버튼, 접기 버튼
-    var chapterStackView = UIStackView() // 목차
+    let dedicationStackView = UIStackView() // 헌정사
+    let summaryStackView = UIStackView() // 요약
+    let summaryButtonStackView = UIStackView() // 더 보기 버튼, 접기 버튼
+    let chapterStackView = UIStackView() // 목차
     
     // Scroll View
     let scrollView = UIScrollView() // 책 번호 버튼 밑으로 스크롤 뷰 적용
+    
+    var book: Book?
+    var bookNumber: Int?
+    var isExpanded: Bool = false
+    var onChange: (Int) -> Void = { _ in }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -68,55 +68,24 @@ class ContentView: UIView {
     func prepareSubviews() {
         backgroundColor = .white
         
-        setBookTitle()
-        setBookNumberStackView()
-        setScrollView()
-        setImageView()
-        setSmallBookTitle()
-        setAuthorStackView()
-        setReleaseDateStackView()
-        setPagesStackView()
-        setBookInformationStackView()
-        setContainerStackView()
-        setDedicationStackView()
-        setSummaryStackView()
-        setChapterStackView()
-        
-        setConstraints()
-    }
-    
-    private func setBookTitle() {
         bookTitle.textAlignment = .center
         bookTitle.font = UIFont.systemFont(ofSize: 24, weight: .bold)
         bookTitle.numberOfLines = 0
-        
         addSubview(bookTitle)
-    }
-    
-    private func setBookNumberStackView() {
+        
         bookNumberStackView.axis = .horizontal
         bookNumberStackView.spacing = 20
-        
         addSubview(bookNumberStackView)
-    }
-    
-    private func setScrollView() {
-        scrollView.showsVerticalScrollIndicator = false
         
+        scrollView.showsVerticalScrollIndicator = false
         addSubview(scrollView)
-    }
-    
-    private func setImageView() {
+        
         bookImageView.contentMode = .scaleAspectFit
-    }
-    
-    private func setSmallBookTitle() {
+        
         smallBookTitle.font = UIFont.systemFont(ofSize: 20, weight: .bold)
         smallBookTitle.textColor = .black
         smallBookTitle.numberOfLines = 0
-    }
-    
-    private func setAuthorStackView() {
+        
         authorTitle.text = "Author"
         authorTitle.font = UIFont.systemFont(ofSize: 16, weight: .bold)
         authorTitle.textColor = .black
@@ -124,99 +93,162 @@ class ContentView: UIView {
         authorLabel.font = UIFont.systemFont(ofSize: 18)
         authorLabel.textColor = .darkGray
         
-        authorStackView = makeStackView(arrangedSubviews: [authorTitle, authorLabel], axis: .horizontal)
+        [authorTitle, authorLabel].forEach { authorStackView.addArrangedSubview($0) }
+        authorStackView.axis = .horizontal
+        authorStackView.spacing = 8
         authorStackView.alignment = .bottom
-    }
-    
-    private func setReleaseDateStackView() {
-        releaseDateTitle = makeTitle(title: "Released", size: .small)
         
-        releaseDateStackView = makeStackView(arrangedSubviews: [releaseDateTitle, releaseDateLabel], axis: .horizontal)
-    }
-    
-    func releaseDateFormatter(input: String) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
+        releaseDateTitle.text = "Released"
+        releaseDateTitle.textColor = .black
+        releaseDateTitle.font = UIFont.systemFont(ofSize: 14, weight: .bold)
         
-        if let date = formatter.date(from: input) {
-            formatter.dateFormat = "MMM dd, yyyy"
-            return formatter.string(from: date)
-        } else {
-            return "Unknown"
-        }
-    }
-    
-    private func setPagesStackView() {
-        pagesTitle = makeTitle(title: "Pages", size: .small)
+        releaseDateLabel.font = UIFont.systemFont(ofSize: 14)
+        releaseDateLabel.textColor = .gray
         
-        pagesStackView = makeStackView(arrangedSubviews: [pagesTitle, pagesLabel], axis: .horizontal)
-    }
-    
-    private func setBookInformationStackView() {
-        bookInformationStackView = makeStackView(arrangedSubviews: [smallBookTitle, authorStackView, releaseDateStackView, pagesStackView], axis: .vertical)
+        [releaseDateTitle, releaseDateLabel].forEach { releaseDateStackView.addArrangedSubview($0) }
+        releaseDateStackView.axis = .horizontal
+        releaseDateStackView.spacing = 8
+        
+        pagesTitle.text = "Pages"
+        pagesTitle.textColor = .black
+        pagesTitle.font = UIFont.systemFont(ofSize: 14, weight: .bold)
+        
+        pagesLabel.font = UIFont.systemFont(ofSize: 14)
+        pagesLabel.textColor = .gray
+        
+        [pagesTitle, pagesLabel].forEach { pagesStackView.addArrangedSubview($0) }
+        pagesStackView.axis = .horizontal
+        pagesStackView.spacing = 8
+        
+        [smallBookTitle, authorStackView, releaseDateStackView, pagesStackView].forEach { bookInformationStackView.addArrangedSubview($0) }
+        bookInformationStackView.axis = .vertical
+        bookInformationStackView.spacing = 8
         bookInformationStackView.alignment = .leading
-    }
-    
-    private func setContainerStackView() {
-        containerStackView = UIStackView(arrangedSubviews: [bookImageView, bookInformationStackView])
+        
+        [bookImageView, bookInformationStackView].forEach { containerStackView.addArrangedSubview($0) }
         containerStackView.axis = .horizontal
         containerStackView.spacing = 16
         containerStackView.alignment = .top
-        
         scrollView.addSubview(containerStackView)
-    }
-    
-    private func setDedicationStackView() {
-        dedicationTitle = makeTitle(title: "Dedication", size: .medium)
+        
+        dedicationTitle.text = "Dedication"
+        dedicationTitle.textColor = .black
+        dedicationTitle.font = UIFont.systemFont(ofSize: 18, weight: .bold)
         
         dedicationLabel.font = UIFont.systemFont(ofSize: 14)
         dedicationLabel.textColor = .darkGray
         dedicationLabel.numberOfLines = 0
         
-        dedicationStackView = makeStackView(arrangedSubviews: [dedicationTitle, dedicationLabel], axis: .vertical)
-        
+        [dedicationTitle, dedicationLabel].forEach { dedicationStackView.addArrangedSubview($0) }
+        dedicationStackView.axis = .vertical
+        dedicationStackView.spacing = 8
         scrollView.addSubview(dedicationStackView)
-    }
-    
-    private func setSummaryStackView() {
-        summaryTitle = makeTitle(title: "Summary", size: .medium)
         
-        showMoreButton = makeSummaryButton(title: "더 보기")
-        showLessButton = makeSummaryButton(title: "접기")
+        summaryTitle.text = "Summary"
+        summaryTitle.textColor = .black
+        summaryTitle.font = UIFont.systemFont(ofSize: 18, weight: .bold)
+        
+        showMoreButton.setTitle("더 보기", for: .normal)
+        showMoreButton.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
+        showMoreButton.setTitleColor(.systemBlue, for: .normal)
+        
+        showLessButton.setTitle("접기", for: .normal)
+        showLessButton.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
+        showLessButton.setTitleColor(.systemBlue, for: .normal)
         
         summaryLabel.font = UIFont.systemFont(ofSize: 14)
         summaryLabel.textColor = .darkGray
         summaryLabel.numberOfLines = 0
         
         let spacer = UIView()
-        summaryButtonStackView = UIStackView(arrangedSubviews: [spacer, showMoreButton, showLessButton])
-                
-        summaryStackView = makeStackView(arrangedSubviews: [summaryTitle, summaryLabel, summaryButtonStackView], axis: .vertical)
-        
+        [spacer, showMoreButton, showLessButton].forEach { summaryButtonStackView.addArrangedSubview($0) }
+        [summaryTitle, summaryLabel, summaryButtonStackView].forEach { summaryStackView.addArrangedSubview($0) }
+        summaryStackView.axis = .vertical
+        summaryStackView.spacing = 8
         scrollView.addSubview(summaryStackView)
-    }
-    
-    // 요약 텍스트 제한 글자 수(450자) 반환
-    func showSummary(isFullText: Bool) -> String {
-        guard let book else { return "" }
-        let text = book.summary
-        if isFullText || book.summary.count < 450 {
-            return text
-        } else {
-            return String(text.prefix(450)) + "..."
-        }
-    }
-    
-    private func setChapterStackView() {
-        chapterTitle = makeTitle(title: "Chapters", size: .medium)
+        
+        chapterTitle.text = "Chapters"
+        chapterTitle.textColor = .black
+        chapterTitle.font = UIFont.systemFont(ofSize: 18, weight: .bold)
         
         chapterLabel.font = UIFont.systemFont(ofSize: 14)
         chapterLabel.textColor = .darkGray
         chapterLabel.numberOfLines = 0
         
-        chapterStackView = makeStackView(arrangedSubviews: [chapterTitle, chapterLabel], axis: .vertical)
-        
+        [chapterTitle, chapterLabel].forEach { chapterStackView.addArrangedSubview($0) }
+        chapterStackView.axis = .vertical
+        chapterStackView.spacing = 8
         scrollView.addSubview(chapterStackView)
+        
+        setConstraints()
+    }
+    
+    func updateUI() {
+        guard let book, let bookNumber else { return }
+        
+        bookTitle.text = book.title
+        
+        bookNumberStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        for index in 0..<7 { // books.count 등으로 구현할 수 없는지?
+            let button = makeBookNumberButton(bookNumber: index)
+            bookNumberStackView.addArrangedSubview(button)
+            if bookNumber != index {
+                button.setTitleColor(.systemBlue, for: .normal)
+                button.backgroundColor = .systemGray5
+            }
+        }
+        
+        bookImageView.image = UIImage(named: "harrypotter\(bookNumber + 1)")
+        
+        smallBookTitle.text = book.title
+        
+        authorLabel.text = book.author
+        
+        let date = book.releaseDate
+        releaseDateLabel.text = releaseDateFormatter(input: date)
+        
+        pagesLabel.text = String(book.pages)
+        
+        dedicationLabel.text = book.dedication
+        
+//        if book.summary.count < 450 {
+//            summaryLabel.text = showSummary(isFullText: true)
+//            showMoreButton.isHidden = true
+//            showLessButton.isHidden = true
+//        } else if isExpanded {
+//            summaryLabel.text = showSummary(isFullText: true)
+//            showMoreButton.isHidden = true
+//            showLessButton.isHidden = false
+//        } else {
+//            summaryLabel.text = showSummary(isFullText: false)
+//            showMoreButton.isHidden = false
+//            showLessButton.isHidden = true
+//        }
+        
+        updateSummaryUI()
+        
+        let chapters = book.chapters.map { $0.title }.joined(separator: "\n")
+        chapterLabel.attributedText = attributedString(text: chapters)
+        
+        scrollView.setContentOffset(.zero, animated: false) // 다른 책 선택 시 스크롤 맨 위로 이동
+    }
+    
+    func updateSummaryUI() {
+        guard let book else { return }
+        
+        if book.summary.count < 450 {
+            summaryLabel.text = showSummary(isFullText: true)
+            showMoreButton.isHidden = true
+            showLessButton.isHidden = true
+        } else if isExpanded {
+            summaryLabel.text = showSummary(isFullText: true)
+            showMoreButton.isHidden = true
+            showLessButton.isHidden = false
+        } else {
+            summaryLabel.text = showSummary(isFullText: false)
+            showMoreButton.isHidden = false
+            showLessButton.isHidden = true
+        }
     }
     
     private func setConstraints() {
@@ -289,107 +321,34 @@ class ContentView: UIView {
         updateUI()
     }
     
-    func updateUI() {
-        guard let book, let bookNumber else { return }
+    func releaseDateFormatter(input: String) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
         
-        bookTitle.text = book.title
-        
-        bookNumberStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
-        for index in 0..<7 { // books.count 등으로 구현할 수 없는지?
-            let button = makeBookNumberButton(bookNumber: index)
-            bookNumberStackView.addArrangedSubview(button)
-            if bookNumber != index {
-                button.setTitleColor(.systemBlue, for: .normal)
-                button.backgroundColor = .systemGray5
-            }
-        }
-        
-        bookImageView.image = UIImage(named: "harrypotter\(bookNumber + 1)")
-        
-        smallBookTitle.text = book.title
-        
-        authorLabel.text = book.author
-        
-        let date = book.releaseDate
-        releaseDateLabel.text = releaseDateFormatter(input: date)
-        
-        pagesLabel.text = String(book.pages)
-        
-        dedicationLabel.text = book.dedication
-        
-        if book.summary.count < 450 {
-            summaryLabel.text = showSummary(isFullText: true)
-            showMoreButton.isHidden = true
-            showLessButton.isHidden = true
-        } else if isFullSummary {
-            summaryLabel.text = showSummary(isFullText: true)
-            showMoreButton.isHidden = true
-            showLessButton.isHidden = false
+        if let date = formatter.date(from: input) {
+            formatter.dateFormat = "MMM dd, yyyy"
+            return formatter.string(from: date)
         } else {
-            summaryLabel.text = showSummary(isFullText: false)
-            showMoreButton.isHidden = false
-            showLessButton.isHidden = true
+            return "Unknown"
         }
-        
-        let chapters = book.chapters.map { $0.title }.joined(separator: "\n")
-        let attributedString = NSMutableAttributedString(string: chapters)
+    }
+    
+    // 요약 텍스트 제한 글자 수(450자) 반환
+    func showSummary(isFullText: Bool) -> String {
+        guard let book else { return "" }
+        let text = book.summary
+        if isFullText || book.summary.count < 450 {
+            return text
+        } else {
+            return String(text.prefix(450)) + "..."
+        }
+    }
+    
+    func attributedString(text: String) -> NSMutableAttributedString {
+        let attributedString = NSMutableAttributedString(string: text)
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = 8
         attributedString.addAttribute(NSAttributedString.Key.paragraphStyle, value: paragraphStyle, range: NSMakeRange(0, attributedString.length))
-        chapterLabel.attributedText = attributedString
-    }
-    
-    private enum TitleSize {
-        case small, medium
-    }
-    
-    private func makeTitle(title: String, size: TitleSize) -> UILabel {
-        let label = UILabel()
-        label.text = title
-        label.textColor = .black
-        
-        switch size {
-        case .medium:
-            label.font = UIFont.systemFont(ofSize: 18, weight: .bold)
-        case .small:
-            label.font = UIFont.systemFont(ofSize: 14, weight: .bold)
-        }
-        
-        return label
-    }
-    
-    private enum ContentSize {
-        case short, long
-    }
-    
-    private func makeContent(content: String, size: ContentSize) -> UILabel {
-        let label = UILabel()
-        label.text = content
-        label.font = UIFont.systemFont(ofSize: 14)
-        
-        switch size {
-        case .long:
-            label.textColor = .darkGray
-            label.numberOfLines = 0
-        case .short:
-            label.textColor = .gray
-        }
-        
-        return label
-    }
-    
-    private func makeStackView(arrangedSubviews: [UIView], axis: NSLayoutConstraint.Axis) -> UIStackView {
-        let stackView = UIStackView(arrangedSubviews: arrangedSubviews)
-        stackView.axis = axis
-        stackView.spacing = 8
-        return stackView
-    }
-    
-    private func makeSummaryButton(title: String) -> UIButton {
-        let button = UIButton()
-        button.setTitle(title, for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
-        button.setTitleColor(.systemBlue, for: .normal)
-        return button
+        return attributedString
     }
 }

@@ -9,15 +9,15 @@ import UIKit
 
 class ViewController: UIViewController {
     struct UserDefaultsKeys {
-        static let shouldShowFullSummaryBookNumbers = "shouldShowFullSummaryBookNumbers"
+        static let shouldExpandBookNumbers = "shouldExpandBookNumbers"
     }
-    
-    private var books: [Book] = []
-    private var selectedBookNumber = 0 // 현재 선택된 책 번호
-    private var shouldShowFullSummaryBookNumbers: Set<Int> = [] // summary 더보기/접기 정보 저장
     
     private let contentView = ContentView()
     private let dataService = DataService() // JSON 정보 로드
+    
+    private var books: [Book] = []
+    private var selectedBookNumber = 0 // 현재 선택된 책 번호
+    private var shouldExpandBookNumbers: Set<Int> = [] // summary 더보기/접기 정보 저장
     
     override func loadView() {
         super.loadView()
@@ -32,33 +32,9 @@ class ViewController: UIViewController {
         
         loadUserPreference()
         
-        contentView.showMoreButton.addTarget(self, action: #selector(summaryButtonTapped), for: .touchUpInside)
-        contentView.showLessButton.addTarget(self, action: #selector(summaryButtonTapped), for: .touchUpInside)
+        configureContentView() // 더 보기 버튼 타겟-액션, 클로저 설정
         
-        contentView.onChange = { [weak self] selectedNumber in
-            guard let self else { return }
-            self.selectedBookNumber = selectedNumber
-            contentView.book = books[selectedNumber]
-            contentView.bookNumber = selectedNumber
-            if shouldShowFullSummaryBookNumbers.contains(selectedNumber) {
-                contentView.isFullSummary = true
-            } else {
-                contentView.isFullSummary = false
-            }
-        }
-        
-        updateUI()
-    }
-    
-    func updateUI() {
-        contentView.book = books[selectedBookNumber]
-        contentView.bookNumber = selectedBookNumber
-        if shouldShowFullSummaryBookNumbers.contains(selectedBookNumber) {
-            contentView.isFullSummary = true
-        } else {
-            contentView.isFullSummary = false
-        }
-        contentView.updateUI()
+        updateUI(bookNumber: selectedBookNumber)
     }
     
     func loadBooks() {
@@ -75,6 +51,32 @@ class ViewController: UIViewController {
         }
     }
     
+    private func loadUserPreference() {
+        if let saved = UserDefaults.standard.array(forKey: UserDefaultsKeys.shouldExpandBookNumbers) as? [Int] {
+            shouldExpandBookNumbers = Set(saved)
+        }
+    }
+    
+    func configureContentView() {
+        contentView.showMoreButton.addTarget(self, action: #selector(summaryButtonTapped), for: .touchUpInside)
+        contentView.showLessButton.addTarget(self, action: #selector(summaryButtonTapped), for: .touchUpInside)
+        
+        contentView.onChange = { [weak self] selectedNumber in
+            guard let self else { return }
+            
+            self.selectedBookNumber = selectedNumber
+            updateUI(bookNumber: selectedNumber)
+        }
+    }
+    
+    func updateUI(bookNumber: Int) {
+        contentView.book = books[bookNumber]
+        contentView.bookNumber = bookNumber
+        contentView.isExpanded = shouldExpandBookNumbers.contains(bookNumber)
+        
+        contentView.updateUI()
+    }
+    
     func showError(_ error: Error) {
         let alertTitle = NSLocalizedString("Error", comment: "Error alert title")
         let alert = UIAlertController(
@@ -89,27 +91,19 @@ class ViewController: UIViewController {
         present(alert, animated: true, completion: nil)
     }
     
-    private func loadUserPreference() {
-        if let saved = UserDefaults.standard.array(forKey: UserDefaultsKeys.shouldShowFullSummaryBookNumbers) as? [Int] {
-            shouldShowFullSummaryBookNumbers = Set(saved)
-        }
-    }
-    
     @objc func summaryButtonTapped() {
-        if shouldShowFullSummaryBookNumbers.contains(selectedBookNumber) {
-            contentView.summaryLabel.text = contentView.showSummary(isFullText: false)
-            contentView.showMoreButton.isHidden = false
-            contentView.showLessButton.isHidden = true
-            contentView.isFullSummary = false
-            shouldShowFullSummaryBookNumbers.remove(selectedBookNumber)
-            UserDefaults.standard.set(Array(shouldShowFullSummaryBookNumbers), forKey: UserDefaultsKeys.shouldShowFullSummaryBookNumbers)
+        if shouldExpandBookNumbers.contains(selectedBookNumber) {
+            contentView.isExpanded = false
+            contentView.updateSummaryUI()
+            
+            shouldExpandBookNumbers.remove(selectedBookNumber)
+            UserDefaults.standard.set(Array(shouldExpandBookNumbers), forKey: UserDefaultsKeys.shouldExpandBookNumbers)
         } else {
-            contentView.summaryLabel.text = contentView.showSummary(isFullText: true)
-            contentView.showMoreButton.isHidden = true
-            contentView.showLessButton.isHidden = false
-            contentView.isFullSummary = true
-            shouldShowFullSummaryBookNumbers.insert(selectedBookNumber)
-            UserDefaults.standard.set(Array(shouldShowFullSummaryBookNumbers), forKey: UserDefaultsKeys.shouldShowFullSummaryBookNumbers)
+            contentView.isExpanded = true
+            contentView.updateSummaryUI()
+            
+            shouldExpandBookNumbers.insert(selectedBookNumber)
+            UserDefaults.standard.set(Array(shouldExpandBookNumbers), forKey: UserDefaultsKeys.shouldExpandBookNumbers)
         }
     }
 }
