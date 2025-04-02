@@ -189,13 +189,23 @@ class ContentView: UIView {
         bookTitle.text = book.title
         
         bookNumberStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+//        for index in 0..<7 { // books.count 등으로 구현할 수 없는지?
+//            let button = makeBookNumberButton(bookNumber: index)
+//            bookNumberStackView.addArrangedSubview(button)
+//            if bookNumber != index {
+//                button.setTitleColor(.systemBlue, for: .normal)
+//                button.backgroundColor = .systemGray5
+//            }
+//        }
+        
         for index in 0..<7 { // books.count 등으로 구현할 수 없는지?
-            let button = makeBookNumberButton(bookNumber: index)
-            bookNumberStackView.addArrangedSubview(button)
+            let button = BookNumberButton(number: index)
+            button.addTarget(self, action: #selector(bookNumberButtonTapped), for: .touchUpInside)
             if bookNumber != index {
                 button.setTitleColor(.systemBlue, for: .normal)
                 button.backgroundColor = .systemGray5
             }
+            bookNumberStackView.addArrangedSubview(button)
         }
         
         bookImageView.image = UIImage(named: "harrypotter\(bookNumber + 1)")
@@ -237,15 +247,15 @@ class ContentView: UIView {
         guard let book else { return }
         
         if book.summary.count < 450 {
-            summaryLabel.text = showSummary(isFullText: true)
+            summaryLabel.text = showSummary(isExpanded: true)
             showMoreButton.isHidden = true
             showLessButton.isHidden = true
         } else if isExpanded {
-            summaryLabel.text = showSummary(isFullText: true)
+            summaryLabel.text = showSummary(isExpanded: true)
             showMoreButton.isHidden = true
             showLessButton.isHidden = false
         } else {
-            summaryLabel.text = showSummary(isFullText: false)
+            summaryLabel.text = showSummary(isExpanded: false)
             showMoreButton.isHidden = false
             showLessButton.isHidden = true
         }
@@ -299,24 +309,30 @@ class ContentView: UIView {
         dedicationStackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -40).isActive = true
     }
     
-    private func makeBookNumberButton(bookNumber: Int) -> UIButton {
-        let button = UIButton()
-        button.setTitle("\(bookNumber + 1)", for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
-        button.backgroundColor = .systemBlue
-        button.layer.masksToBounds = true
-        button.frame.size.width = 30
-        button.frame.size.height = 30
-        button.layer.cornerRadius = 15
-        button.addTarget(self, action: #selector(bookNumberButtonTapped), for: .touchUpInside)
-        return button
-    }
+//    private func makeBookNumberButton(bookNumber: Int) -> UIButton {
+//        let button = UIButton()
+//        button.setTitle("\(bookNumber + 1)", for: .normal)
+//        button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
+//        button.backgroundColor = .systemBlue
+//        button.layer.masksToBounds = true
+//        button.frame.size.width = 30
+//        button.frame.size.height = 30
+//        button.layer.cornerRadius = 15
+//        button.addTarget(self, action: #selector(bookNumberButtonTapped), for: .touchUpInside)
+//        return button
+//    }
     
     @objc func bookNumberButtonTapped(_ button: UIButton) {
-        guard let number = Int((button.titleLabel?.text)!) else { return }
-        bookNumber = number - 1 // number는 +1 되어 있는 숫자이므로 원복.
+        // guard let number = Int((button.titleLabel?.text)!) else { return }
         
-        onChange(bookNumber!)
+        let button = button as? BookNumberButton
+        guard let number = button?.number else { return }
+        
+        // bookNumber = number - 1 // number는 +1 되어 있는 숫자이므로 원복.
+        // bookNumber = number
+        
+        // onChange(bookNumber!)
+        onChange(number)
         
         updateUI()
     }
@@ -334,10 +350,10 @@ class ContentView: UIView {
     }
     
     // 요약 텍스트 제한 글자 수(450자) 반환
-    func showSummary(isFullText: Bool) -> String {
+    func showSummary(isExpanded: Bool) -> String {
         guard let book else { return "" }
         let text = book.summary
-        if isFullText || book.summary.count < 450 {
+        if isExpanded || book.summary.count < 450 {
             return text
         } else {
             return String(text.prefix(450)) + "..."
