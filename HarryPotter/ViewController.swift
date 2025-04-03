@@ -49,12 +49,12 @@ class ViewController: UIViewController {
             }
         }
         
-        // summary 더보기/접기 버튼 정보 로드
+        // 각 버튼 summary 더보기/접기 상태 로드
         if let saved = UserDefaults.standard.array(forKey: UserDefaultsKeys.shouldExpandBookNumbers) as? [Int] {
             shouldExpandBookNumbers = Set(saved)
         }
         
-        // 책 번호, 더보기/접기 버튼 정보 추가
+        // 파싱된 데이터에 책 번호, 더보기/접기 상태 추가
         for index in books.indices {
             books[index].number = index
             if shouldExpandBookNumbers.contains(index) {
@@ -99,19 +99,21 @@ class ViewController: UIViewController {
     
     @objc private func summaryButtonTapped() {
         if books[selectedBookNumber].isExpanded {
-            books[selectedBookNumber].isExpanded = false
-            contentView.book = books[selectedBookNumber]
-            contentView.updateSummaryUI()
+            updateSummaryUI()
             
             shouldExpandBookNumbers.remove(selectedBookNumber)
             UserDefaults.standard.set(Array(shouldExpandBookNumbers), forKey: UserDefaultsKeys.shouldExpandBookNumbers)
         } else {
-            books[selectedBookNumber].isExpanded = true
-            contentView.book = books[selectedBookNumber]
-            contentView.updateSummaryUI()
+            updateSummaryUI()
             
             shouldExpandBookNumbers.insert(selectedBookNumber)
             UserDefaults.standard.set(Array(shouldExpandBookNumbers), forKey: UserDefaultsKeys.shouldExpandBookNumbers)
         }
+    }
+    
+    private func updateSummaryUI() {
+        books[selectedBookNumber].isExpanded.toggle()
+        contentView.book = books[selectedBookNumber]
+        contentView.updateSummaryUI()
     }
 }

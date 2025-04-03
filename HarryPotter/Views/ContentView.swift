@@ -52,7 +52,7 @@ class ContentView: UIView {
     var book: Book?
     var onChange: (Int) -> Void = { _ in } // 현재 선택된 책 번호 바인딩
     
-    private var previousButton: BookNumberButton? // 사용자가 다른 책 선택 시, 이전 책 번호 저장
+    private var previousButton: BookNumberButton? // 사용자가 다른 책 선택 시, 이전 버튼 정보 저장
     
     override init(frame: CGRect) {
         super.init(frame: frame)
