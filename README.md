@@ -51,7 +51,7 @@ git clone https://github.com/witt1e/HarryPotter.git
 - https://wittie.tistory.com/27
 
 # [6] Troubleshooting
-- https://wittie.tistory.com/14
+- https://wittie.tistory.com/28
 
 # [7] Contact
 - 📋 https://github.com/witt1e
