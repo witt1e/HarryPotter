@@ -30,14 +30,12 @@ class ViewController: UIViewController {
         
         loadBooks()
         
-        loadUserPreference()
+        configureContentView() // 더보기 버튼 타겟-액션, 클로저 설정
         
-        configureContentView() // 더 보기 버튼 타겟-액션, 클로저 설정
-        
-        updateUI(bookNumber: selectedBookNumber)
+        updateUI()
     }
     
-    func loadBooks() {
+    private func loadBooks() {
         dataService.loadBooks { [weak self] result in
             guard let self = self else { return }
             switch result {
@@ -49,15 +47,22 @@ class ViewController: UIViewController {
                 }
             }
         }
-    }
-    
-    private func loadUserPreference() {
+        
+        // summary 더보기/접기 버튼 정보 로드
         if let saved = UserDefaults.standard.array(forKey: UserDefaultsKeys.shouldExpandBookNumbers) as? [Int] {
             shouldExpandBookNumbers = Set(saved)
         }
+        
+        // 책 번호, 더보기/접기 버튼 정보 추가
+        for index in books.indices {
+            books[index].number = index
+            if shouldExpandBookNumbers.contains(index) {
+                books[index].isExpanded = true
+            }
+        }
     }
     
-    func configureContentView() {
+    private func configureContentView() {
         contentView.showMoreButton.addTarget(self, action: #selector(summaryButtonTapped), for: .touchUpInside)
         contentView.showLessButton.addTarget(self, action: #selector(summaryButtonTapped), for: .touchUpInside)
         
@@ -65,19 +70,17 @@ class ViewController: UIViewController {
             guard let self else { return }
             
             self.selectedBookNumber = selectedNumber
-            updateUI(bookNumber: selectedNumber)
+            updateUI()
         }
     }
     
-    func updateUI(bookNumber: Int) {
-        contentView.book = books[bookNumber]
-        contentView.bookNumber = bookNumber
-        contentView.isExpanded = shouldExpandBookNumbers.contains(bookNumber)
+    private func updateUI() {
+        contentView.book = books[selectedBookNumber]
         
         contentView.updateUI()
     }
     
-    func showError(_ error: Error) {
+    private func showError(_ error: Error) {
         let alertTitle = NSLocalizedString("Error", comment: "Error alert title")
         let alert = UIAlertController(
             title: alertTitle, message: error.localizedDescription, preferredStyle: .alert)
@@ -91,15 +94,17 @@ class ViewController: UIViewController {
         present(alert, animated: true, completion: nil)
     }
     
-    @objc func summaryButtonTapped() {
+    @objc private func summaryButtonTapped() {
         if shouldExpandBookNumbers.contains(selectedBookNumber) {
-            contentView.isExpanded = false
+            books[selectedBookNumber].isExpanded = false
+            contentView.book = books[selectedBookNumber]
             contentView.updateSummaryUI()
             
             shouldExpandBookNumbers.remove(selectedBookNumber)
             UserDefaults.standard.set(Array(shouldExpandBookNumbers), forKey: UserDefaultsKeys.shouldExpandBookNumbers)
         } else {
-            contentView.isExpanded = true
+            books[selectedBookNumber].isExpanded = true
+            contentView.book = books[selectedBookNumber]
             contentView.updateSummaryUI()
             
             shouldExpandBookNumbers.insert(selectedBookNumber)

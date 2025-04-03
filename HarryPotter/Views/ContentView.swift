@@ -8,7 +8,7 @@
 import UIKit
 
 class ContentView: UIView {
-    // Label
+    // Labels
     let bookTitle = UILabel() // 책 제목
     let smallBookTitle = UILabel() // 책 정보 스택 뷰 내 제목
     let authorTitle = UILabel() // "Author"
@@ -24,14 +24,14 @@ class ContentView: UIView {
     let chapterTitle = UILabel() // "Chapter"
     let chapterLabel = UILabel() // 목차
     
-    // Button
+    // Buttons
     let showMoreButton = UIButton() // 더 보기
     let showLessButton = UIButton() // 접기
     
     // Image View
     let bookImageView = UIImageView() // 책 이미지
     
-    // Stack View
+    // Stack Views
     let bookNumberStackView = UIStackView() // 책 번호
     
     let containerStackView = UIStackView() // 전체(이미지 + 책 정보)
@@ -49,9 +49,7 @@ class ContentView: UIView {
     let scrollView = UIScrollView() // 책 번호 버튼 밑으로 스크롤 뷰 적용
     
     var book: Book?
-    var bookNumber: Int?
-    var isExpanded: Bool = false
-    var onChange: (Int) -> Void = { _ in }
+    var onChange: (Int) -> Void = { _ in } // 현재 선택된 책 번호 바인딩
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -65,7 +63,7 @@ class ContentView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func prepareSubviews() {
+    private func prepareSubviews() {
         backgroundColor = .white
         
         bookTitle.textAlignment = .center
@@ -184,57 +182,33 @@ class ContentView: UIView {
     }
     
     func updateUI() {
-        guard let book, let bookNumber else { return }
+        guard let book else { return }
         
         bookTitle.text = book.title
         
         bookNumberStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
-//        for index in 0..<7 { // books.count 등으로 구현할 수 없는지?
-//            let button = makeBookNumberButton(bookNumber: index)
-//            bookNumberStackView.addArrangedSubview(button)
-//            if bookNumber != index {
-//                button.setTitleColor(.systemBlue, for: .normal)
-//                button.backgroundColor = .systemGray5
-//            }
-//        }
-        
-        for index in 0..<7 { // books.count 등으로 구현할 수 없는지?
+        for index in 0..<7 {
             let button = BookNumberButton(number: index)
             button.addTarget(self, action: #selector(bookNumberButtonTapped), for: .touchUpInside)
-            if bookNumber != index {
-                button.setTitleColor(.systemBlue, for: .normal)
-                button.backgroundColor = .systemGray5
+            if book.number == index {
+                button.setTitleColor(.white, for: .normal)
+                button.backgroundColor = .systemBlue
             }
             bookNumberStackView.addArrangedSubview(button)
         }
         
-        bookImageView.image = UIImage(named: "harrypotter\(bookNumber + 1)")
+        bookImageView.image = UIImage(named: "harrypotter\(book.number + 1)")
         
         smallBookTitle.text = book.title
         
         authorLabel.text = book.author
         
-        let date = book.releaseDate
-        releaseDateLabel.text = releaseDateFormatter(input: date)
+        releaseDateLabel.text = releaseDateFormatter(date: book.releaseDate)
         
         pagesLabel.text = String(book.pages)
         
         dedicationLabel.text = book.dedication
-        
-//        if book.summary.count < 450 {
-//            summaryLabel.text = showSummary(isFullText: true)
-//            showMoreButton.isHidden = true
-//            showLessButton.isHidden = true
-//        } else if isExpanded {
-//            summaryLabel.text = showSummary(isFullText: true)
-//            showMoreButton.isHidden = true
-//            showLessButton.isHidden = false
-//        } else {
-//            summaryLabel.text = showSummary(isFullText: false)
-//            showMoreButton.isHidden = false
-//            showLessButton.isHidden = true
-//        }
-        
+                
         updateSummaryUI()
         
         let chapters = book.chapters.map { $0.title }.joined(separator: "\n")
@@ -250,7 +224,7 @@ class ContentView: UIView {
             summaryLabel.text = showSummary(isExpanded: true)
             showMoreButton.isHidden = true
             showLessButton.isHidden = true
-        } else if isExpanded {
+        } else if book.isExpanded {
             summaryLabel.text = showSummary(isExpanded: true)
             showMoreButton.isHidden = true
             showLessButton.isHidden = false
@@ -309,48 +283,29 @@ class ContentView: UIView {
         dedicationStackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -40).isActive = true
     }
     
-//    private func makeBookNumberButton(bookNumber: Int) -> UIButton {
-//        let button = UIButton()
-//        button.setTitle("\(bookNumber + 1)", for: .normal)
-//        button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
-//        button.backgroundColor = .systemBlue
-//        button.layer.masksToBounds = true
-//        button.frame.size.width = 30
-//        button.frame.size.height = 30
-//        button.layer.cornerRadius = 15
-//        button.addTarget(self, action: #selector(bookNumberButtonTapped), for: .touchUpInside)
-//        return button
-//    }
-    
-    @objc func bookNumberButtonTapped(_ button: UIButton) {
-        // guard let number = Int((button.titleLabel?.text)!) else { return }
-        
-        let button = button as? BookNumberButton
+    @objc private func bookNumberButtonTapped(_ sender: UIButton) {
+        let button = sender as? BookNumberButton
         guard let number = button?.number else { return }
         
-        // bookNumber = number - 1 // number는 +1 되어 있는 숫자이므로 원복.
-        // bookNumber = number
-        
-        // onChange(bookNumber!)
         onChange(number)
         
         updateUI()
     }
     
-    func releaseDateFormatter(input: String) -> String {
+    private func releaseDateFormatter(date: String) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
         
-        if let date = formatter.date(from: input) {
+        if let date = formatter.date(from: date) {
             formatter.dateFormat = "MMM dd, yyyy"
             return formatter.string(from: date)
         } else {
-            return "Unknown"
+            return ""
         }
     }
     
-    // 요약 텍스트 제한 글자 수(450자) 반환
-    func showSummary(isExpanded: Bool) -> String {
+    // summary 텍스트 제한 글자 수(450자) 반환
+    private func showSummary(isExpanded: Bool) -> String {
         guard let book else { return "" }
         let text = book.summary
         if isExpanded || book.summary.count < 450 {
@@ -360,7 +315,8 @@ class ContentView: UIView {
         }
     }
     
-    func attributedString(text: String) -> NSMutableAttributedString {
+    // chapters 줄 간격 8 설정
+    private func attributedString(text: String) -> NSMutableAttributedString {
         let attributedString = NSMutableAttributedString(string: text)
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = 8

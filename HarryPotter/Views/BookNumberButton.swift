@@ -8,7 +8,7 @@
 import UIKit
 
 class BookNumberButton: UIButton {
-    var number: Int
+    let number: Int
     
     init(number: Int) {
         self.number = number
@@ -24,7 +24,8 @@ class BookNumberButton: UIButton {
     private func configureUI() {
         setTitle("\(number + 1)", for: .normal)
         titleLabel?.font = UIFont.systemFont(ofSize: 16)
-        backgroundColor = .systemBlue
+        setTitleColor(.systemBlue, for: .normal)
+        backgroundColor = .systemGray5
         layer.masksToBounds = true
         frame.size.width = 30
         frame.size.height = 30

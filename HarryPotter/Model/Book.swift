@@ -17,6 +17,9 @@ struct Book: Codable {
     let wiki: String
     let chapters: [Chapter]
     
+    var number: Int = 0
+    var isExpanded: Bool = false
+    
     enum CodingKeys: String, CodingKey {
         case title, author, pages
         case releaseDate = "release_date"
