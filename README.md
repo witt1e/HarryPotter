@@ -1,4 +1,4 @@
-# Baseball Game
+# Harry Potter
 <!--배지-->
 ![MIT License][license-shield] ![Repository Size][repository-size-shield] ![Issue Closed][issue-closed-shield]
 
@@ -12,18 +12,20 @@
 - [[3] Game Rules](#3-game-rules)
 - [[4] Contribution](#4-contribution)
 - [[5] Acknowledgement](#5-acknowledgement)
-- [[6] Contact](#6-contact)
-- [[7] License](#7-license)
+- [[6] Troubleshooting](#6-troubleshooting)
+- [[7] Contact](#7-contact)
+- [[8] License](#8-license)
 
 # [1] About the Project
-- 숫자 야구 게임은 1명이 즐길 수 있는 추리 게임으로, 컴퓨터가 설정한 3자리의 숫자를 맞히는 것이 목표.
-- 각 자리의 숫자와 위치가 모두 맞으면 '스트라이크', 숫자만 맞고 위치가 다르면 '볼'로 판정. 예) 정답이 123일 때 132를 추리하면 1스트라이크 2볼.
+- 해리포터 책의 정보를 볼 수 있는 해리포터 시리즈 책 앱을 개발
+- 가변적인 데이터에 유연하게 대응하는 UI를 구성
+- Autolayout과 View 간의 제약 관계를 적절히 구현
 >
 
 ## Features
-- *1. 게임 시작: 정답을 맞추면 다시 타이틀 화면으로 복귀함. 게임 중간에 빠져나오려면 qqq 또는 QQQ 입력.*
-- *2. 게임 기록 보기: 정답을 맞춘 게임을 게임 1회로 간주하고, 각 게임마다 몇 번의 시도를 했었는지 확인 가능*
-- *3. 게임 끝내기: 게임을 끝내고, 기록을 초기화함.*
+- *1. 해리포터 시리즈별 정보 조회: 시리즈 번호를 누르면 시리즈별 정보(책 제목, 이미지, 저자명, 출판일, 총 페이지 수, 헌정사, 요약 내용, 각 챕터 제목 등)를 일목요연하게 제공*
+- *2. 요약내용에 대한 더보기/접기 버튼 기능: 내용이 450자를 초과할 경우 버튼을 눌러 나머지 내용을 확인할 수 있음. 다른 시리즈를 조회하거나 앱을 종료하더라도 버튼 상태를 저장하여 관리*
+- *3. 다양한 디바이스 및 가로/세로 모드 모두 지원: iOS 16 이상 기기(아이폰 한정)에 대해 모두 대응*
 
 ## Technologies
 - [Swift](https://www.swift.org) 5.0
@@ -33,7 +35,7 @@
 ## Installation
 - Repository 클론
 ```bash
-git clone https://github.com/nbcampMasterChapter2Team4/KSWBaseBallGame.git
+git clone https://github.com/witt1e/HarryPotter.git
 ```
 
 # [3] Game Rules
@@ -48,11 +50,13 @@ git clone https://github.com/nbcampMasterChapter2Team4/KSWBaseBallGame.git
 # [5] Acknowledgement
 - https://stackoverflow.com/questions/51300121/how-to-make-a-swift-enum-with-associated-values-equatable
 
-# [6] Contact
+# [6] Troubleshooting
+- https://wittie.tistory.com/14
+
+# [7] Contact
 - 📋 https://github.com/witt1e
 
-
-# [7] License
+# [8] License
 MIT 라이센스
 라이센스에 대한 정보는 [`LICENSE`][license-url]에 있습니다.
 
