@@ -76,6 +76,8 @@ class ViewController: UIViewController {
     }
     
     private func updateUI() {
+        guard !books.isEmpty else { return }
+        
         contentView.book = books[selectedBookNumber]
         
         contentView.updateUI()
