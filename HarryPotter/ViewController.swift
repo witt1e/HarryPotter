@@ -98,7 +98,7 @@ class ViewController: UIViewController {
     }
     
     @objc private func summaryButtonTapped() {
-        if shouldExpandBookNumbers.contains(selectedBookNumber) {
+        if books[selectedBookNumber].isExpanded {
             books[selectedBookNumber].isExpanded = false
             contentView.book = books[selectedBookNumber]
             contentView.updateSummaryUI()
