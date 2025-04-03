@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SnapKit
 
 class ContentView: UIView {
     // Labels
@@ -178,7 +179,8 @@ class ContentView: UIView {
         chapterStackView.spacing = 8
         scrollView.addSubview(chapterStackView)
         
-        setConstraints()
+        // setConstraints() // 오토 레이아웃 설정
+        setConstraintsBySnapKit() // 오토 레이아웃 설정(Snap Kit 이용)
     }
     
     func updateUI() {
@@ -281,6 +283,62 @@ class ContentView: UIView {
         dedicationStackView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 20).isActive = true
         dedicationStackView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -20).isActive = true
         dedicationStackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -40).isActive = true
+    }
+    
+    private func setConstraintsBySnapKit() {
+        bookTitle.snp.makeConstraints {
+            $0.top.equalTo(safeAreaLayoutGuide).offset(10)
+            $0.leading.equalTo(safeAreaLayoutGuide).offset(20)
+            $0.trailing.equalTo(safeAreaLayoutGuide).offset(-20)
+        }
+        
+        bookNumberStackView.snp.makeConstraints {
+            $0.top.equalTo(bookTitle.snp.bottom).offset(16)
+            $0.centerX.equalTo(safeAreaLayoutGuide)
+            $0.height.equalTo(30)
+        }
+        
+        scrollView.snp.makeConstraints {
+            $0.top.equalTo(bookNumberStackView.snp.bottom).offset(16)
+            $0.leading.equalTo(safeAreaLayoutGuide)
+            $0.trailing.equalTo(safeAreaLayoutGuide)
+            $0.bottom.equalTo(safeAreaLayoutGuide)
+        }
+        
+        let width: CGFloat = 100
+        bookImageView.snp.makeConstraints {
+            $0.height.equalTo(width * 1.5)
+            $0.width.equalTo(width)
+        }
+        
+        containerStackView.snp.makeConstraints {
+            $0.top.equalTo(scrollView.snp.top)
+            $0.leading.equalTo(scrollView.snp.leading).offset(20)
+            $0.trailing.equalTo(scrollView.snp.trailing).offset(-20)
+            $0.width.equalTo(scrollView.snp.width).offset(-40)
+        }
+        
+        summaryStackView.snp.makeConstraints {
+            $0.top.equalTo(dedicationStackView.snp.bottom).offset(24)
+            $0.leading.equalTo(scrollView.snp.leading).offset(20)
+            $0.trailing.equalTo(scrollView.snp.trailing).offset(-20)
+            $0.width.equalTo(scrollView.snp.width).offset(-40)
+        }
+        
+        chapterStackView.snp.makeConstraints {
+            $0.top.equalTo(summaryStackView.snp.bottom).offset(24)
+            $0.leading.equalTo(scrollView.snp.leading).offset(20)
+            $0.trailing.equalTo(scrollView.snp.trailing).offset(-20)
+            $0.bottom.equalTo(scrollView.snp.bottom)
+            $0.width.equalTo(scrollView.snp.width).offset(-40)
+        }
+        
+        dedicationStackView.snp.makeConstraints {
+            $0.top.equalTo(containerStackView.snp.bottom).offset(24)
+            $0.leading.equalTo(scrollView.snp.leading).offset(20)
+            $0.trailing.equalTo(scrollView.snp.trailing).offset(-20)
+            $0.width.equalTo(scrollView.snp.width).offset(-40)
+        }
     }
     
     @objc private func bookNumberButtonTapped(_ sender: UIButton) {
