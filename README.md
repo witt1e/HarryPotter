@@ -49,7 +49,8 @@ git clone https://github.com/nbcampMasterChapter2Team4/KSWBaseBallGame.git
 - https://stackoverflow.com/questions/51300121/how-to-make-a-swift-enum-with-associated-values-equatable
 
 # [6] Contact
-- 📋 [https://witt1e.github.io/contact](https://witt1e.github.io/contact)
+- 📋 https://github.com/witt1e
+
 
 # [7] License
 MIT 라이센스
