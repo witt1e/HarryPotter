@@ -236,7 +236,7 @@ class ContentView: UIView {
         guard let book else { return }
         
         if book.summary.count < 450 {
-            summaryLabel.text = showSummary(isExpanded: true)
+            summaryLabel.text = book.summary
             showMoreButton.isHidden = true
             showLessButton.isHidden = true
         } else if book.isExpanded {
@@ -392,7 +392,7 @@ class ContentView: UIView {
     private func showSummary(isExpanded: Bool) -> String {
         guard let book else { return "" }
         let text = book.summary
-        if isExpanded || book.summary.count < 450 {
+        if isExpanded {
             return text
         } else {
             return String(text.prefix(450)) + "..."
