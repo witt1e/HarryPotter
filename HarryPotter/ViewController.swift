@@ -13,7 +13,7 @@ class ViewController: UIViewController {
     }
     
     private let contentView = ContentView()
-    private let dataService = DataService() // JSON 정보 로드
+    private let dataService = DataService()
     
     private var books: [Book] = []
     private var selectedBookNumber = 0 // 현재 선택된 책 번호
@@ -36,6 +36,7 @@ class ViewController: UIViewController {
     }
     
     private func loadBooks() {
+        // JSON 파싱
         dataService.loadBooks { [weak self] result in
             guard let self = self else { return }
             switch result {
