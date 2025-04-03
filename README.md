@@ -9,7 +9,7 @@
   - [Technologies](#technologies)
 - [[2] Getting Started](#2-getting-started)
   - [Installation](#installation)
-- [[3] Game Rules](#3-game-rules)
+- [[3] Usage](#3-usage)
 - [[4] Contribution](#4-contribution)
 - [[5] Acknowledgement](#5-acknowledgement)
 - [[6] Troubleshooting](#6-troubleshooting)
@@ -38,17 +38,17 @@
 git clone https://github.com/witt1e/HarryPotter.git
 ```
 
-# [3] Game Rules
-- 정답은 3자리 정수로 랜덤 생성되며, 맨 앞에는 0이 오지 않고, 숫자는 중복되지 않습니다. 예) 123 (O), 012 (X), 450 (O), 112 (X)
-- 플레이어도 0~9 사이의 3자리 정수를 입력해야 합니다.
-- 각 자리의 숫자와 위치가 모두 맞으면 '스트라이크', 숫자만 맞고 위치가 다르면 '볼'입니다.
-- 3자리 모두 맞으면 '홈런'(즉, 정답), 3자리 모두 틀리면 '아웃'입니다.
+# [3] Usage
+- 각 시리즈 조회: 해리포터 총 시리즈와 동일하게 1~7번의 버튼 제공. 버튼을 누르면 해당 시리즈 정보를 조회할 수 있음.
+- 더보기/접기 기능: 요약 내용 우측 하단에 더보기/접기 버튼 제공. 내용이 450자를 초과하는 경우에만 버튼이 활성화되고, 버튼을 토글하면 전체 내용을 확인할 수 있음. 다른 시리즈 버튼을 누르거나 앱을 종료하더라도 해당 시리즈의 상태정보를 기억함.
 
 # [4] Contribution
-4조(i구 4람살려)
+2조(TJ 미디어)
 
 # [5] Acknowledgement
-- https://stackoverflow.com/questions/51300121/how-to-make-a-swift-enum-with-associated-values-equatable
+- https://developer.apple.com/documentation/uikit/uistackview
+- https://wittie.tistory.com/19
+- https://wittie.tistory.com/27
 
 # [6] Troubleshooting
 - https://wittie.tistory.com/14
