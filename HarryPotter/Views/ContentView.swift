@@ -78,7 +78,6 @@ class ContentView: UIView {
             if index == 0 {
                 button.setTitleColor(.white, for: .normal)
                 button.backgroundColor = .systemBlue
-                // previousButton = button
             }
             bookNumberStackView.addArrangedSubview(button)
         }
@@ -250,7 +249,7 @@ class ContentView: UIView {
         }
     }
     
-    // prepareSubviews()에서 호출해야만 작동(현재 주석 처리)
+    // prepareSubviews()에서 호출해야만 작동(현재 주석 처리되어 있음)
     private func setConstraints() {
         bookTitle.translatesAutoresizingMaskIntoConstraints = false
         bookTitle.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 10).isActive = true
