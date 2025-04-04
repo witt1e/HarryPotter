@@ -52,7 +52,7 @@ class ContentView: UIView {
     var book: Book?
     var onChange: (Int) -> Void = { _ in } // 현재 선택된 책 번호 바인딩
     
-    private var previousButton: BookNumberButton? // 사용자가 다른 책 선택 시, 이전 버튼 정보 저장
+    // private var previousButton: BookNumberButton? // 사용자가 다른 책 선택 시, 이전 버튼 정보 저장
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -80,7 +80,7 @@ class ContentView: UIView {
             if index == 0 {
                 button.setTitleColor(.white, for: .normal)
                 button.backgroundColor = .systemBlue
-                previousButton = button
+                // previousButton = button
             }
             bookNumberStackView.addArrangedSubview(button)
         }
@@ -211,6 +211,19 @@ class ContentView: UIView {
 //            }
 //            bookNumberStackView.addArrangedSubview(button)
 //        }
+        
+        for view in bookNumberStackView.arrangedSubviews {
+            let button = view as? BookNumberButton
+            guard let button else { continue }
+            
+            if book.number == button.number {
+                button.setTitleColor(.white, for: .normal)
+                button.backgroundColor = .systemBlue
+            } else {
+                button.setTitleColor(.systemBlue, for: .normal)
+                button.backgroundColor = .systemGray5
+            }
+        }
         
         bookImageView.image = UIImage(named: "harrypotter\(book.number + 1)")
         
@@ -361,15 +374,15 @@ class ContentView: UIView {
         // 사용자가 새로운 버튼을 탭했을 때,
         // 이전 버튼 정보가 있다면, 이전 버튼의 스타일을 unselected로 원복.
         // 새로운 버튼의 스타일을 selected로 변경하고, 이전 버튼에 저장.
-        if let previousButton {
-            previousButton.setTitleColor(.systemBlue, for: .normal)
-            previousButton.backgroundColor = .systemGray5
-        }
-        
-        button?.setTitleColor(.white, for: .normal)
-        button?.backgroundColor = .systemBlue
-        
-        previousButton = button
+//        if let previousButton {
+//            previousButton.setTitleColor(.systemBlue, for: .normal)
+//            previousButton.backgroundColor = .systemGray5
+//        }
+//        
+//        button?.setTitleColor(.white, for: .normal)
+//        button?.backgroundColor = .systemBlue
+//        
+//        previousButton = button
         
         onChange(number)
         
