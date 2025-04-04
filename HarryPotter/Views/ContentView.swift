@@ -64,6 +64,7 @@ class ContentView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - UI update methods
     private func prepareSubviews() {
         backgroundColor = .white
         
@@ -249,6 +250,7 @@ class ContentView: UIView {
         }
     }
     
+    // MARK: - UI constaints
     // prepareSubviews()에서 호출해야만 작동(현재 주석 처리되어 있음)
     private func setConstraints() {
         bookTitle.translatesAutoresizingMaskIntoConstraints = false
@@ -354,6 +356,7 @@ class ContentView: UIView {
         }
     }
     
+    // MARK: - objc action method
     @objc private func bookNumberButtonTapped(_ sender: UIButton) {
         let button = sender as? BookNumberButton
         guard let number = button?.number else { return }
@@ -363,6 +366,7 @@ class ContentView: UIView {
         updateUI()
     }
     
+    // MARK: - UI helper methods
     private func releaseDateFormatter(date: String) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
