@@ -9,7 +9,7 @@ import UIKit
 
 class ViewController: UIViewController {
     struct UserDefaultsKeys {
-        static let shouldExpandBookNumbers = "shouldExpandBookNumbers"
+        static let expandedBookNumbers = "expandedBookNumbers"
     }
     
     private let contentView = ContentView()
@@ -17,7 +17,7 @@ class ViewController: UIViewController {
     
     private var books: [Book] = []
     private var selectedBookNumber = 0 // 현재 선택된 책 번호
-    private var shouldExpandBookNumbers: Set<Int> = [] // summary 더보기/접기 정보 저장
+    private var expandedBookNumbers: Set<Int> = [] // summary 더보기/접기 정보 저장
     
     override func loadView() {
         super.loadView()
@@ -50,14 +50,14 @@ class ViewController: UIViewController {
         }
         
         // 각 버튼 summary 더보기/접기 상태 로드
-        if let saved = UserDefaults.standard.array(forKey: UserDefaultsKeys.shouldExpandBookNumbers) as? [Int] {
-            shouldExpandBookNumbers = Set(saved)
+        if let saved = UserDefaults.standard.array(forKey: UserDefaultsKeys.expandedBookNumbers) as? [Int] {
+            expandedBookNumbers = Set(saved)
         }
         
         // 파싱된 데이터에 책 번호, 더보기/접기 상태 추가
         for index in books.indices {
             books[index].number = index
-            if shouldExpandBookNumbers.contains(index) {
+            if expandedBookNumbers.contains(index) {
                 books[index].isExpanded = true
             }
         }
@@ -101,13 +101,13 @@ class ViewController: UIViewController {
         if books[selectedBookNumber].isExpanded {
             updateSummaryUI()
             
-            shouldExpandBookNumbers.remove(selectedBookNumber)
-            UserDefaults.standard.set(Array(shouldExpandBookNumbers), forKey: UserDefaultsKeys.shouldExpandBookNumbers)
+            expandedBookNumbers.remove(selectedBookNumber)
+            UserDefaults.standard.set(Array(expandedBookNumbers), forKey: UserDefaultsKeys.expandedBookNumbers)
         } else {
             updateSummaryUI()
             
-            shouldExpandBookNumbers.insert(selectedBookNumber)
-            UserDefaults.standard.set(Array(shouldExpandBookNumbers), forKey: UserDefaultsKeys.shouldExpandBookNumbers)
+            expandedBookNumbers.insert(selectedBookNumber)
+            UserDefaults.standard.set(Array(expandedBookNumbers), forKey: UserDefaultsKeys.expandedBookNumbers)
         }
     }
     

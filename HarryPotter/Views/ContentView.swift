@@ -52,8 +52,6 @@ class ContentView: UIView {
     var book: Book?
     var onChange: (Int) -> Void = { _ in } // 현재 선택된 책 번호 바인딩
     
-    // private var previousButton: BookNumberButton? // 사용자가 다른 책 선택 시, 이전 버튼 정보 저장
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -201,17 +199,6 @@ class ContentView: UIView {
         
         bookTitle.text = book.title
         
-//        bookNumberStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
-//        for index in 0..<7 {
-//            let button = BookNumberButton(number: index)
-//            button.addTarget(self, action: #selector(bookNumberButtonTapped), for: .touchUpInside)
-//            if book.number == index {
-//                button.setTitleColor(.white, for: .normal)
-//                button.backgroundColor = .systemBlue
-//            }
-//            bookNumberStackView.addArrangedSubview(button)
-//        }
-        
         for view in bookNumberStackView.arrangedSubviews {
             let button = view as? BookNumberButton
             guard let button else { continue }
@@ -263,6 +250,7 @@ class ContentView: UIView {
         }
     }
     
+    // prepareSubviews()에서 호출해야만 작동(현재 주석 처리)
     private func setConstraints() {
         bookTitle.translatesAutoresizingMaskIntoConstraints = false
         bookTitle.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 10).isActive = true
@@ -370,19 +358,6 @@ class ContentView: UIView {
     @objc private func bookNumberButtonTapped(_ sender: UIButton) {
         let button = sender as? BookNumberButton
         guard let number = button?.number else { return }
-        
-        // 사용자가 새로운 버튼을 탭했을 때,
-        // 이전 버튼 정보가 있다면, 이전 버튼의 스타일을 unselected로 원복.
-        // 새로운 버튼의 스타일을 selected로 변경하고, 이전 버튼에 저장.
-//        if let previousButton {
-//            previousButton.setTitleColor(.systemBlue, for: .normal)
-//            previousButton.backgroundColor = .systemGray5
-//        }
-//        
-//        button?.setTitleColor(.white, for: .normal)
-//        button?.backgroundColor = .systemBlue
-//        
-//        previousButton = button
         
         onChange(number)
         
